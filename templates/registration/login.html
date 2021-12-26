@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+  {% else %}
+    <form method="post" action="{% url 'login' %}" novalidate>
+      {% csrf_token %}
+      <div class="row h-30 justify-content-center">
+        <div class="col-sm-6 my-auto">
+          {{ form.username|as_crispy_field  }}
+        </div>
+      </div>
+      <div class="row h-30 justify-content-center">
+        <div class="col-sm-6 my-auto">
+          {{ form.password|as_crispy_field  }}
+        </div>
+      </div>
+      <div class="row h-30 justify-content-center">
+        <button type="submit" class="btn btn-success">Save person</button>
+      </div>
+    </form>
+    {% comment %} <p><a href="{% url 'password_reset' %}">Lost password?</a></p> {% endcomment %}
+  {% endif %}
+{% endblock %}

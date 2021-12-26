@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  {% comment %} {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %} {% endcomment %}
+
+  <form method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="submit" value="Update">
+    </form>
+    {% comment %} <p><a href="{% url 'password_reset' %}">Lost password?</a></p> {% endcomment %}
+{% endblock %}
