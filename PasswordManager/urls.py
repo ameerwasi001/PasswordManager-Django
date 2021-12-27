@@ -18,12 +18,14 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
 from .views.view import directory
-from .views.auth import SignUp, edit
-from .forms.signup import Profile
+from .views.auth import SignUp, edit, create_password
+from .forms.signup import Profile, Passwords
 from django.contrib.auth.decorators import user_passes_test
 
 admin.site.register(Profile)
 admin.register(Profile)
+admin.site.register(Passwords)
+admin.register(Passwords)
 
 login_forbidden = user_passes_test(lambda u: u.is_anonymous, '/')
 notlogin_forbidden = user_passes_test(lambda u: not u.is_anonymous, '/login')
@@ -31,6 +33,7 @@ notlogin_forbidden = user_passes_test(lambda u: not u.is_anonymous, '/login')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', directory),
+    path('createPassword', notlogin_forbidden(create_password), name="edit"),
     path('edit', notlogin_forbidden(edit), name="edit"),
     path('signup', login_forbidden(SignUp.as_view()), name="signup"),
     path('login', login_forbidden(LoginView.as_view()), name="login"),

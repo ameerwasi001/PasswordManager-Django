@@ -1,6 +1,7 @@
+from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse_lazy
-from ..forms.signup import SignUpForm, Profile, UpdateProfile
+from ..forms.signup import PasswordForm, SignUpForm, Profile, UpdateProfile
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -19,6 +20,20 @@ def create_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+def create_password(request):
+    if request.method == 'POST':
+        form = PasswordForm(request.POST)
+        password = request.user.password
+        password_entered = request.POST.get("given_user_password")
+        form.user = request.user
+        if form.is_valid() and check_password(password_entered, password):
+            form.save(password_entered)
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'passwords/passwordform.html', {"form": form})
+    form = PasswordForm()
+    return render(request, 'passwords/passwordform.html', {"form": form})
 
 def edit(request):
     profile = Profile.objects.get(user_id = request.user)
