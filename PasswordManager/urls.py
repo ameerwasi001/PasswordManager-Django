@@ -32,7 +32,7 @@ notlogin_forbidden = user_passes_test(lambda u: not u.is_anonymous, '/login')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', directory),
+    path('', notlogin_forbidden(directory)),
     path('createPassword', notlogin_forbidden(create_password), name="edit"),
     path('edit', notlogin_forbidden(edit), name="edit"),
     path('signup', login_forbidden(SignUp.as_view()), name="signup"),
