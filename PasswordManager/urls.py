@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
-from .views.view import directory
+from .views.passwordListing import directory
 from .views.auth import SignUp, edit, create_password
-from .forms.signup import Profile, Passwords
+from .forms.profile import Profile
+from .forms.passwords import Passwords
 from django.contrib.auth.decorators import user_passes_test
 
 admin.site.register(Profile)

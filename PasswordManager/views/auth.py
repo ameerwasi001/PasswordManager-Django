@@ -1,7 +1,8 @@
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse_lazy
-from ..forms.signup import PasswordForm, SignUpForm, Profile, UpdateProfile
+from ..forms.profile import SignUpForm, Profile, UpdateProfile
+from ..forms.passwords import Passwords, PasswordForm
 from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
