@@ -54,5 +54,12 @@ def whole_decrypt(enc_data: str, enc_key: str, password: str):
     key = password_decrypt(enc_key.encode(), password)
     return decrypt(enc_data.encode(), key).decode()
 
+# print(
+#     password_decrypt(
+#         "uHZH1sm2tJAw_dDpqVSGiQABhqCAAAAAAGHMPP049qYh8K6_up6QDAPZu-k8FrioraG0qWf8xptM0mspa6Une6JuRMZjwNNZZNGnYocRADETVTTNfr46zuShkWWfW5fNT2cJ1gSow1QycdcgXfWRHzYC9rJsSWP_Grg6VvI=".encode(),
+#         "mx12345678"
+#     )
+# )
+
 # enc_key, enc_data = whole_encrypt("Hello there", "mx12345678")
 # print(whole_decrypt(enc_data, enc_key, "mx12345678"))

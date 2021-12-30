@@ -19,22 +19,27 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
 from .views.passwordListing import directory
 from .views.auth import SignUp, edit, create_password
+from .views.messages import messages, send_message
 from .forms.profile import Profile
-from .forms.passwords import Passwords
+from .forms.passwords import Passwords, Message
 from django.contrib.auth.decorators import user_passes_test
 
 admin.site.register(Profile)
 admin.register(Profile)
 admin.site.register(Passwords)
 admin.register(Passwords)
+admin.site.register(Message)
+admin.register(Message)
 
 login_forbidden = user_passes_test(lambda u: u.is_anonymous, '/')
 notlogin_forbidden = user_passes_test(lambda u: not u.is_anonymous, '/login')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('message/<int:password_id>', notlogin_forbidden(send_message), name="send_message"),
+    path('messages', notlogin_forbidden(messages), name="send_message"),
     path('', notlogin_forbidden(directory)),
-    path('createPassword', notlogin_forbidden(create_password), name="edit"),
+    path('createPassword', notlogin_forbidden(create_password), name="createPassword"),
     path('edit', notlogin_forbidden(edit), name="edit"),
     path('signup', login_forbidden(SignUp.as_view()), name="signup"),
     path('login', login_forbidden(LoginView.as_view()), name="login"),

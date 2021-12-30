@@ -15,6 +15,32 @@ class Passwords(models.Model):
     def __str__(self):
         return "pass: " + str(self.user)
 
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_sender_user')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE)
+    password = models.ForeignKey(Passwords, on_delete=models.CASCADE)
+    decrypted_key = models.TextField(blank=True)
+    encrypted_key = models.TextField(blank=True)
+
+    def __str__(self):
+        return str(self.sender) + " :: " + str(self.receiver) + " <-> " + str(self.password.id)
+
+class SendPasswordForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ()
+
+    def save(self, password, sender, dec_key, receiver, commit=True):
+        instance = super(SendPasswordForm, self).save(commit=False)
+        instance.sender = sender
+        instance.password = password
+        instance.decrypted_key = dec_key
+        instance.encrypted_password = ""
+        instance.receiver = receiver
+        if commit:
+            instance.save()
+        return instance
+
 class PasswordForm(ModelForm):
     websitename = forms.CharField(required=True)
     url = forms.URLField(required=True)

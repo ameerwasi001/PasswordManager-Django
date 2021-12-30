@@ -25,18 +25,19 @@
   <table class="table table-hover" id="passTable">
       <thead>
         <tr>
+          <th scope="col">Sender</th>
           <th scope="col">Website</th>
           <th scope="col">Username</th>
           <th scope="col">Password</th>
         </tr>
       </thead>
       <tbody>
-          {% for password in passwords %}
+          {% for message in messages %}
               <tr>
-                <td><a href="{{password.url}}">{{password.websitename}}</a></td>
-                <td>{{password.websiteusername}}</td>
-                <td>{{password.password}}</td>
-                <td><a href="/message/{{password.id}}" class="btn btn-success btn-sm">Send</a></td>
+                <td>{{message.sender}}</td>
+                <td><a href="{{password.url}}">{{message.password.websitename}}</a></td>
+                <td>{{message.password.websiteusername}}</td>
+                <td>{{message.password.password}}</td>
               </tr>
           {% endfor %}
       </tbody>
