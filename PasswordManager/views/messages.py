@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from PasswordManager.encryption import password_encrypt, whole_decrypt, password_decrypt
+from PasswordManager.encryption import password_encrypt, whole_decrypt, password_decrypt, rsa_encrypt, rsa_decrypt
 from PasswordManager.forms.passwords import Message, Passwords, SendPasswordForm
 from django.contrib.auth.models import User
 
@@ -23,8 +23,9 @@ def send_message(request, password_id):
         except:
             found = False
         if form.is_valid() and check_password(password_entered, password) and found:
-            dec_key = password_decrypt(enc_key.encode(), password_entered)
-            form.save(website_password, user, dec_key.decode(), other_user)
+            dec_key = password_decrypt(enc_key.encode(), password_entered).decode()
+            dec_rsa_key = rsa_encrypt(other_user.profile.public_key, dec_key)
+            form.save(website_password, user, dec_rsa_key, other_user)
             return HttpResponseRedirect("/")
         else:
             return HttpResponseRedirect(f"/message/{password_id}")
@@ -44,7 +45,8 @@ def messages(request):
         for message in messages:
             enc_key = message.encrypted_key
             if enc_key == "" or enc_key == None:
-                dec_key = message.decrypted_key
+                enc_priv_key = user.profile.encrypted_private_key
+                dec_key = rsa_decrypt(enc_priv_key, password_entered, message.decrypted_key)
                 message.encrypted_key = password_encrypt(dec_key.encode(), password_entered).decode()
                 enc_key = message.encrypted_key
                 message.decrypted_key = ""
@@ -54,4 +56,3 @@ def messages(request):
     for message in messages:
         message.password.password = "****"
     return render(request, "passwords/messageListing.html", {"messages": messages, "show_password": False})
-

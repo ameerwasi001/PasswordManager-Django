@@ -8,9 +8,9 @@
   {% endif %} {% endcomment %}
 
   <form method="post">
-        {% csrf_token %}
-        {{form|crispy}}
-        <input type="submit" value="Register">
-    </form>
+    {% csrf_token %}
+    {{form|crispy}}
+    <input type="submit" value="Register">
+  </form>
     {% comment %} <p><a href="{% url 'password_reset' %}">Lost password?</a></p> {% endcomment %}
 {% endblock %}

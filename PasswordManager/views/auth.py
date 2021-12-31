@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import login, authenticate
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse_lazy
 from ..forms.profile import SignUpForm, Profile, UpdateProfile
@@ -7,20 +8,28 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from ..encryption import generate_rsa_keys
 
-class SignUp(CreateView):
-    form_class = SignUpForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
-
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            profile = Profile.objects.create(user=instance)
+            pub_key, enc_priv_key = generate_rsa_keys(raw_password)
+            profile.public_key = pub_key
+            profile.encrypted_private_key = enc_priv_key
+            profile.save()
+            login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            return HttpResponseRedirect('signup')
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
 
 def create_password(request):
     if request.method == 'POST':

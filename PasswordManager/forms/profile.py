@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    public_key = models.TextField()
+    encrypted_private_key = models.TextField()
 
     def __str__(self):
         return str(self.user)
