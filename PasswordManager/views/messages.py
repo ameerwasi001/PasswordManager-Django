@@ -22,13 +22,21 @@ def send_message(request, password_id):
             other_user = User.objects.get(username = request.POST.get("receiver"))
         except:
             found = False
-        if form.is_valid() and check_password(password_entered, password) and found:
+        pass_check = check_password(password_entered, password)
+        if form.is_valid() and pass_check and found:
             dec_key = password_decrypt(enc_key.encode(), password_entered).decode()
             dec_rsa_key = rsa_encrypt(other_user.profile.public_key, dec_key)
             form.save(website_password, user, dec_rsa_key, other_user)
             return HttpResponseRedirect("/")
         else:
-            return HttpResponseRedirect(f"/message/{password_id}")
+            return render(
+                request, 
+                'passwords/sendPassword.html', {
+                    "form": form, 
+                    "no_user_found": not found,
+                    "incorrect_password": not pass_check
+                }
+            )
     form = SendPasswordForm()
     return render(request, 'passwords/sendPassword.html', {"form": form})
 
@@ -41,7 +49,13 @@ def messages(request):
         password_entered = request.POST.get("given_user_password")
         password = user.password
         if not check_password(password_entered, password):
-            return render(request, "passwords/messageListing.html", {"messages": messages, "show_password": False})
+            for message in messages:
+                message.password.password = "****"
+            return render(
+                request, 
+                "passwords/messageListing.html", 
+                {"messages": messages, "show_password": False, "error": True}
+            )
         for message in messages:
             enc_key = message.encrypted_key
             if enc_key == "" or enc_key == None:

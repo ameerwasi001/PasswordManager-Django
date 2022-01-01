@@ -26,7 +26,7 @@ def signup(request):
             login(request, user)
             return HttpResponseRedirect('/')
         else:
-            return HttpResponseRedirect('signup')
+            return render(request, 'registration/signup.html', {'form': form, "errors": form.errors})
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
@@ -47,16 +47,13 @@ def create_password(request):
 
 def edit(request):
     profile = Profile.objects.get(user_id = request.user)
-    args = {}
 
     if request.method == 'POST':
         form = UpdateProfile(request.POST, instance=request.user)
         form.user = request.user
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/')
+            return render(request, 'registration/edit.html', {"form": form})
     else:
         form = UpdateProfile(initial={"name": profile.name})
-
-    args['form'] = form
-    return render(request, 'registration/edit.html', args)
+    return render(request, 'registration/edit.html', {"form": form})

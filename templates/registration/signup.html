@@ -3,9 +3,15 @@
 
 {% block content %}
 
-  {% comment %} {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %} {% endcomment %}
+  {% if form.errors %}
+    {% for field in form %}
+      {% for error in field.errors %} 
+        <div class="alert alert-danger">
+          <strong>{{ error|escape }}</strong>
+        </div>
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
 
   <form method="post">
     {% csrf_token %}
