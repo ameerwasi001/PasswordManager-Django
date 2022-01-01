@@ -104,6 +104,7 @@ def rsa_decrypt(private_key_str: str, password: str, ciphertext: str):
     )
     return plaintext.decode()
 
+# pub_key, priv_key = generate_rsa_keys("mx12345678")
 # encrypted = rsa_encrypt(pub_key, "Hi There, hello")
 # orig = rsa_decrypt(priv_key, "mx12345678", encrypted)
 # print(orig)
